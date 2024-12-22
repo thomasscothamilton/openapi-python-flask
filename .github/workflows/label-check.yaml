@@ -1,0 +1,37 @@
+name: PR Version Label Check
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled]
+    branches:
+      - main  # Adjust if your default branch is different
+
+jobs:
+  check-label:
+    runs-on: ubuntu-latest
+    name: 'Version Label Check'
+
+    steps:
+    - name: Get PR labels
+      id: get_labels
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const labels = await github.rest.issues.listLabelsOnIssue({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+          core.setOutput('labels', labels.data.map(label => label.name).join(','));
+
+    - name: Check for version label
+      id: check_label
+      run: |
+        labels="${{ steps.get_labels.outputs.labels }}"
+        echo "Labels: $labels"
+        if [[ $labels == *"major"* ]] || [[ $labels == *"minor"* ]] || [[ $labels == *"patch"* ]]; then
+          echo "Version label found."
+        else
+          echo "::error::No version label ('major', 'minor', 'patch') found. Please add one."
+          exit 1
+        fi
