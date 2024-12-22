@@ -21,7 +21,7 @@ paths:
       summary: Get all documents
       tags:
       - document
-      x-openapi-router-controller: server.controllers.default_controller
+      x-openapi-router-controller: server.controllers.document_controller
     post:
       operationId: documents_post
       requestBody:
@@ -40,7 +40,7 @@ paths:
       summary: Create a new document
       tags:
       - document
-      x-openapi-router-controller: server.controllers.default_controller
+      x-openapi-router-controller: server.controllers.document_controller
   /documents/{id}:
     delete:
       operationId: documents_id_delete
@@ -60,7 +60,7 @@ paths:
       summary: Delete a document by ID
       tags:
       - document
-      x-openapi-router-controller: server.controllers.default_controller
+      x-openapi-router-controller: server.controllers.document_controller
     get:
       operationId: documents_id_get
       parameters:
@@ -83,7 +83,7 @@ paths:
       summary: Get a document by ID
       tags:
       - document
-      x-openapi-router-controller: server.controllers.default_controller
+      x-openapi-router-controller: server.controllers.document_controller
     put:
       operationId: documents_id_put
       parameters:
@@ -112,7 +112,7 @@ paths:
       summary: Update a document by ID
       tags:
       - document
-      x-openapi-router-controller: server.controllers.default_controller
+      x-openapi-router-controller: server.controllers.document_controller
 components:
   schemas:
     Document:
