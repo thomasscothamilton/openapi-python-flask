@@ -59,3 +59,5 @@ jobs:
           files: |
             Release.txt
             Additional.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
