@@ -1,0 +1,32 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Artifact
+        run: |
+          echo "Release built at $(date)" > Release.txt
+          echo "Additional content" > Additional.txt
+
+      - name: Test Artifact
+        run: cat Release.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            Release.txt
+            Additional.txt
