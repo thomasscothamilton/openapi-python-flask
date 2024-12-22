@@ -19,7 +19,9 @@ paths:
                 type: array
           description: A list of documents
       summary: Get all documents
-      x-openapi-router-controller: server.controllers.default_controller
+      tags:
+      - document
+      x-openapi-router-controller: server.controllers.document_controller
     post:
       operationId: documents_post
       requestBody:
@@ -36,14 +38,16 @@ paths:
                 $ref: '#/components/schemas/Document'
           description: Document created
       summary: Create a new document
-      x-openapi-router-controller: server.controllers.default_controller
-  /documents/{id}:
+      tags:
+      - document
+      x-openapi-router-controller: server.controllers.document_controller
+  /documents/{document_id}:
     delete:
       operationId: documents_id_delete
       parameters:
       - explode: false
         in: path
-        name: id
+        name: document_id
         required: true
         schema:
           type: string
@@ -54,13 +58,15 @@ paths:
         "404":
           description: Document not found
       summary: Delete a document by ID
-      x-openapi-router-controller: server.controllers.default_controller
+      tags:
+      - document
+      x-openapi-router-controller: server.controllers.document_controller
     get:
       operationId: documents_id_get
       parameters:
       - explode: false
         in: path
-        name: id
+        name: document_id
         required: true
         schema:
           type: string
@@ -75,13 +81,15 @@ paths:
         "404":
           description: Document not found
       summary: Get a document by ID
-      x-openapi-router-controller: server.controllers.default_controller
+      tags:
+      - document
+      x-openapi-router-controller: server.controllers.document_controller
     put:
       operationId: documents_id_put
       parameters:
       - explode: false
         in: path
-        name: id
+        name: document_id
         required: true
         schema:
           type: string
@@ -102,7 +110,9 @@ paths:
         "404":
           description: Document not found
       summary: Update a document by ID
-      x-openapi-router-controller: server.controllers.default_controller
+      tags:
+      - document
+      x-openapi-router-controller: server.controllers.document_controller
 components:
   schemas:
     Document:
@@ -112,7 +122,6 @@ components:
         content: content
       properties:
         id:
-          title: id
           type: string
         title:
           title: title
