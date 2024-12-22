@@ -1,0 +1,86 @@
+      name: PR Version Label Check
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled]
+    branches:
+      - main  # Adjust if your default branch is different
+
+jobs:
+  check-label:
+    runs-on: ubuntu-latest
+    name: 'Version Label Check'
+
+    permissions:
+      contents: write  # Grant write permission to contents
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Get PR labels
+      id: get_labels
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const labels = await github.rest.issues.listLabelsOnIssue({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+          core.setOutput('labels', labels.data.map(label => label.name).join(','));
+
+    - name: Check for version label
+      id: check_label
+      run: |
+        labels="${{ steps.get_labels.outputs.labels }}"
+        echo "Labels: $labels"
+        if [[ $labels == *"major"* ]]; then
+          echo "major" > version_type.txt
+        elif [[ $labels == *"minor"* ]]; then
+          echo "minor" > version_type.txt
+        elif [[ $labels == *"patch"* ]]; then
+          echo "patch" > version_type.txt
+        else
+          echo "::error::No version label ('major', 'minor', 'patch') found. Please add one."
+          exit 1
+        fi
+
+    - name: Get current version
+      id: get_version
+      run: |
+        git fetch --tags
+        latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+        echo "Latest tag: $latest_tag"
+        echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+
+    - name: Increment version
+      id: increment_version
+      run: |
+        version_type=$(cat version_type.txt)
+        latest_tag=${{ env.latest_tag }}
+        IFS='.' read -r -a version_parts <<< "$latest_tag"
+        major=${version_parts[0]}
+        minor=${version_parts[1]}
+        patch=${version_parts[2]}
+        if [[ "$version_type" == "major" ]]; then
+          major=$((major + 1))
+          minor=0
+          patch=0
+        elif [[ "$version_type" == "minor" ]]; then
+          minor=$((minor + 1))
+          patch=0
+        elif [[ "$version_type" == "patch" ]]; then
+          patch=$((patch + 1))
+        fi
+        new_version="$major.$minor.$patch"
+        echo "New version: $new_version"
+        echo "new_version=$new_version" >> $GITHUB_ENV
+
+    - name: Set new version tag
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token
+      run: |
+        new_version=${{ env.new_version }}
+        git tag $new_version
+        git push origin $new_version
