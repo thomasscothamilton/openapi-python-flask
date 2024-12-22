@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     name: 'Version Label Check'
 
+    permissions:
+      contents: write  # Grant write permission to contents
+
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -75,6 +78,8 @@ jobs:
         echo "new_version=$new_version" >> $GITHUB_ENV
 
     - name: Set new version tag
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token
       run: |
         new_version=${{ env.new_version }}
         git tag $new_version
