@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read # for checkout
+
 jobs:
   release:
     name: Release
@@ -25,14 +28,14 @@ jobs:
         with:
           node-version: "lts/*"
 
-    - name: Install dependencies
-      run: npm clean-install
+      - name: Install dependencies
+        run: npm clean-install
 
-    - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
-      run: npm audit signatures
+      - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+        run: npm audit signatures
 
-    - name: Release
-      run: npx semantic-release
+      - name: Release
+        run: npx semantic-release
 
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
