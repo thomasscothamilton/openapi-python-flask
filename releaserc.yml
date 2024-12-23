@@ -1,71 +1,58 @@
----
-branches: 
-  - main
-plugins:
-  - "@semantic-release/commit-analyzer"
-  - "@semantic-release/release-notes-generator"
-  - "@semantic-release/changelog"
-  - "@semantic-release/git"
-  - "@semantic-release/github"
+# .releaserc.yml
 
-verifyConditions:
-  - '@semantic-release/git'
-  - "@semantic-release/github"
-analyzeCommits:
-  - path: "@semantic-release/commit-analyzer"
-    releaseRules:
-    - type: "feat"
-      release: "patch"
-    - type: "hotfix"
-      release: "patch"
-    - type: "patch"
-      release: "patch"
-    - type: "minor"
-      release: "minor"
-    - type: "breaking"
-      release: "major"
-generateNotes:
-  - path: "@semantic-release/release-notes-generator"
-    writerOpts:
-      groupBy: "type"
-      commitGroupsSort:
-        - "feat"
-        - "perf"
-        - "fix"
-      commitsSort: "header"
-    types:
-    - type: "feat"
-    - section: "Features"
-    # Tracked bug fix with a hotfix branch
-    - type: "hotfix"
-    - section: "Bug Fixes"
-    # Uninmportent fix (CI testing, etc)
-    - type: "fix"
-    - hidden: true
-    - type: "chore"
-    - hidden: true
-    - type: "docs"
-    - hidden: true
-    - type: "doc"
-    - hidden: true
-    - type: "style"
-    - hidden: true
-    - type: "refactor"
-    - hidden: true
-    - type: "perf"
-    - hidden: true
-    - type: "test"
-    - hidden: true
-    presetConfig: true
-prepare:
-  - path: "@semantic-release/git"
-  - path: "@semantic-release/changelog"
-    changelogFile: "docs/CHANGELOG.md"
-publish:
-  - path: "@semantic-release/github"
+# Define where the version number is stored in your project
+version_variable: "server/__init__.py:__version__"
 
-success:
-  - "@semantic-release/github"
+# Enable uploading the package to PyPI
+upload_to_pypi: false
 
-fail:
-  - "@semantic-release/github"
+# Disable uploading to other services (e.g., GitLab)
+upload_to_gitlab: false
+
+# Specify the branches that trigger releases and their release types
+branches:
+  main:
+    release_type: production
+  
+# Configuration for changelog generation
+files:
+  changelog: "CHANGELOG.md"
+
+# Additional options
+commit_author:
+  name: "Thomas-Scot Hamilton"
+  email: "thomas.scot.hamilton@outlook.com"
+
+# Specify the version bump strategy (optional)
+# Default is 'version_part', which auto-detects based on commits
+# You can set it to 'no_version_bump' if you manage versions manually
+version_bump_strategy: "version_part"
+
+# Tag format (optional)
+# Default is 'v{version}'
+tag_format: "v{version}"
+
+# Enable or disable GitHub releases
+github:
+  user: "thomasscothamilton"
+  repository: "openapi-python-flask"
+  token: "${GITHUB_TOKEN}"  # Use environment variables for sensitive data
+
+# PyPI configuration (optional)
+# pypi:
+#   username: "__token__"
+#   password: "${PYPI_API_TOKEN}"  # Use environment variables for sensitive data
+
+# Hooks (optional)
+# You can define scripts to run before or after certain actions
+# hooks:
+#   pre:
+#     # Example: Run tests before releasing
+#     - "pytest tests/"
+#   post:
+#     # Example: Notify Slack after release
+#     - "curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"New release {version} created!\"}' https://hooks.slack.com/services/your/slack/webhook"
+
+# Logging level (optional)
+# Options: critical, error, warning, info, debug
+logging_level: "info"
