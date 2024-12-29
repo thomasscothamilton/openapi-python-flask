@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.3.0 (2024-12-29)
+
+### Features
+
+* feat(app): Add openapi python flask application - cloudrun ([`ec3bd40`](https://github.com/thomasscothamilton/openapi-python-flask/commit/ec3bd406f78e99282b23f8f7375c2fff7579fb38))
+
+### Unknown
+
+* Merge pull request #23 from thomasscothamilton/dev
+
+feat(app): Add openapi python flask application - cloudrun ([`e8de8c8`](https://github.com/thomasscothamilton/openapi-python-flask/commit/e8de8c8f1c0fb88d0a60f956392a44096118c178))
+
+
 ## v0.2.0 (2024-12-29)
 
 ### Features
