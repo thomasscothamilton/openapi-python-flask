@@ -8,6 +8,8 @@ metadata:
     environment: dev
 spec:
   location: us-east1  # Replace with your preferred GCP region
+  projectRef:
+    external: thomasscothamilton
   template:
     metadata:
       annotations:
