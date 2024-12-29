@@ -3,6 +3,8 @@ kind: RunService
 metadata:
   name: openapi-python-flask
   namespace: openapi-python-flask  # Replace with your namespace
+  annotations:
+    cnrm.cloud.google.com/deletion-policy: "abandon"  # Keep Cloud Run services when deleted
   labels:
     app: openapi-python-flask
     environment: dev
