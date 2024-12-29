@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.2.0 (2024-12-29)
+
+### Features
+
+* feat(helm): Adding helm charts ([`7eefe41`](https://github.com/thomasscothamilton/openapi-python-flask/commit/7eefe41befa0fb78863b430ea1025ea30cfb3e66))
+
+### Unknown
+
+* Merge pull request #22 from thomasscothamilton/dev
+
+Dev ([`68a882f`](https://github.com/thomasscothamilton/openapi-python-flask/commit/68a882f07a0bb0c6e73cf43034ea6711faf7fe64))
+
+* Adding helm charts ([`b0525cb`](https://github.com/thomasscothamilton/openapi-python-flask/commit/b0525cb4656710cc28b756b7cc3612053c35b5a3))
+
+
 ## v0.1.0 (2024-12-23)
 
 ### Bug Fixes
