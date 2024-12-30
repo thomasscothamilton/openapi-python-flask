@@ -2,29 +2,16 @@ apiVersion: run.cnrm.cloud.google.com/v1beta1
 kind: RunService
 metadata:
   name: openapi-python-flask
-  namespace: openapi-python-flask  # Replace with your namespace
-  annotations:
-    cnrm.cloud.google.com/deletion-policy: "abandon"  # Keep Cloud Run services when deleted
-  labels:
-    app: openapi-python-flask
-    environment: dev
 spec:
   location: us-east1  # Replace with your preferred GCP region
   projectRef:
     external: projects/thomasscothamilton
   template:
-    metadata:
-      annotations:
-        # Annotations for configuring Cloud Run settings
-        run.googleapis.com/cpu-throttling: "true"  # Enable CPU throttling when idle
-        run.googleapis.com/cloudsql-instances: "project-id:region:instance-id"  # Example for Cloud SQL
     spec:
-      containerConcurrency: 80  # Adjust for your app's concurrency needs
       containers:
       - image: us-east1-docker.pkg.dev/thomasscothamilton/openapi-python-flask/openapi-python-flask
         ports:
         - containerPort: 8080
-      serviceAccountName: cnrmsa@thomasscothamilton.iam.gserviceaccount.com  # Replace with your service account
   traffic:
   - latestRevision: true
     percent: 100
