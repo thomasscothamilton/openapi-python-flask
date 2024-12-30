@@ -1,13 +1,13 @@
 apiVersion: run.cnrm.cloud.google.com/v1beta1
 kind: RunService
 metadata:
-  name: openapi-python-flask
+  name: {{ .Values.nameOverride | default .Chart.Name }}
 spec:
-  location: us-east1  # Replace with your preferred GCP region
+  location: {{ .Values.location }}
   projectRef:
-    external: projects/thomasscothamilton
+    external: projects/{{ .Values.projectRef }}
   template:
     containers:
-    - image: us-east1-docker.pkg.dev/thomasscothamilton/openapi-python-flask/openapi-python-flask
+    - image: {{ .Values.image }}
       ports:
-      - containerPort: 8080
+      - containerPort: {{ .Values.containerPort }}
