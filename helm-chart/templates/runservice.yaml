@@ -24,7 +24,7 @@ spec:
       - image: us-east1-docker.pkg.dev/thomasscothamilton/openapi-python-flask/openapi-python-flask
         ports:
         - containerPort: 8080
-      serviceAccountName: developer@thomasscothamilton.iam.gserviceaccount.com  # Replace with your service account
+      serviceAccountName: cnrmsa@thomasscothamilton.iam.gserviceaccount.com  # Replace with your service account
   traffic:
   - latestRevision: true
     percent: 100
