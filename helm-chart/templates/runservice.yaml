@@ -7,11 +7,10 @@ spec:
   projectRef:
     external: projects/thomasscothamilton
   template:
-    spec:
-      containers:
-      - image: us-east1-docker.pkg.dev/thomasscothamilton/openapi-python-flask/openapi-python-flask
-        ports:
-        - containerPort: 8080
+    containers:
+    - image: us-east1-docker.pkg.dev/thomasscothamilton/openapi-python-flask/openapi-python-flask
+      ports:
+      - containerPort: 8080
   traffic:
   - latestRevision: true
     percent: 100
