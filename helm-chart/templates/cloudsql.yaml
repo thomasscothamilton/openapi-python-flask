@@ -1,0 +1,19 @@
+apiVersion: sql.cnrm.cloud.google.com/v1beta1
+kind: SQLDatabase
+metadata:
+  name: {{ .Values.nameOverride | default .Chart.Name }}-cloudsql-database
+spec:
+  charset: utf8mb4
+  collation: utf8mb4_bin
+  instanceRef:
+    name: {{ .Values.nameOverride | default .Chart.Name }}-cloudsql-instance
+---
+apiVersion: sql.cnrm.cloud.google.com/v1beta1
+kind: SQLInstance
+metadata:
+  name: {{ .Values.nameOverride | default .Chart.Name }}-cloudsql-instance
+spec:
+  region: us-east1
+  databaseVersion: MYSQL_8_4
+  settings:
+    tier: db-n1-standard-1
