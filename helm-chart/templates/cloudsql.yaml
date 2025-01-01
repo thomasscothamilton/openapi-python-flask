@@ -1,8 +1,12 @@
 apiVersion: sql.cnrm.cloud.google.com/v1beta1
 kind: SQLDatabase
 metadata:
+  annotations:
+    cnrm.cloud.google.com/project-id: thomasscothamilton
   name: {{ .Values.nameOverride | default .Chart.Name }}-cloudsql-database
 spec:
+  projectRef:
+    external: projects/thomasscothamilton
   charset: utf8mb4
   collation: utf8mb4_bin
   instanceRef:
@@ -11,6 +15,8 @@ spec:
 apiVersion: sql.cnrm.cloud.google.com/v1beta1
 kind: SQLInstance
 metadata:
+  annotations:
+    cnrm.cloud.google.com/project-id: thomasscothamilton
   name: {{ .Values.nameOverride | default .Chart.Name }}-cloudsql-instance
 spec:
   projectRef:
