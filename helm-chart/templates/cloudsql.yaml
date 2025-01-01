@@ -13,6 +13,8 @@ kind: SQLInstance
 metadata:
   name: {{ .Values.nameOverride | default .Chart.Name }}-cloudsql-instance
 spec:
+  projectRef:
+    external: projects/thomasscothamilton
   region: us-east1
   databaseVersion: MYSQL_8_4
   settings:
