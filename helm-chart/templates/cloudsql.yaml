@@ -22,6 +22,6 @@ spec:
   projectRef:
     external: projects/thomasscothamilton
   region: us-east1
-  databaseVersion: MYSQL_8_4
+  databaseVersion: MYSQL_8_0
   settings:
     tier: db-n1-standard-1
