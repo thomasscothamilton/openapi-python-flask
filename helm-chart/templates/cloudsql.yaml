@@ -5,8 +5,6 @@ metadata:
     cnrm.cloud.google.com/project-id: thomasscothamilton
   name: {{ .Values.nameOverride | default .Chart.Name }}-cloudsql-database
 spec:
-  projectRef:
-    external: projects/thomasscothamilton
   charset: utf8mb4
   collation: utf8mb4_bin
   instanceRef:
@@ -19,8 +17,6 @@ metadata:
     cnrm.cloud.google.com/project-id: thomasscothamilton
   name: {{ .Values.nameOverride | default .Chart.Name }}-cloudsql-instance
 spec:
-  projectRef:
-    external: projects/thomasscothamilton
   region: us-east1
   databaseVersion: MYSQL_8_0
   settings:
