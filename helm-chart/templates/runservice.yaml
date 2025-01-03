@@ -7,11 +7,29 @@ kind: RunService
 metadata:
   name: {{ .Values.nameOverride | default .Chart.Name }}
 spec:
+  ingress: "INGRESS_TRAFFIC_ALL"
+  launchStage: "GA"
   location: {{ .Values.location }}
   projectRef:
     external: projects/{{ .Values.projectRef }}
   template:
+    containerConcurrency: 80
     containers:
-    - image: {{ .Values.image }}
-      ports:
-      - containerPort: {{ .Values.containerPort }}
+      - image: >-
+          us-east1-docker.pkg.dev/thomasscothamilton/openapi-python-flask/openapi-python-flask
+        ports:
+          - containerPort: 8080
+            name: http1
+        resources:
+          cpuIdle: true
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+    scaling:
+      maxInstanceCount: 100
+    serviceAccountRef:
+      external: 435144390383-compute@developer.gserviceaccount.com
+    timeout: 300s
+    traffic:
+      - percent: 100
+        type: TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST
