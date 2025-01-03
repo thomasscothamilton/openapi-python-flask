@@ -5,6 +5,4 @@ metadata:
     cnrm.cloud.google.com/project-id: thomasscothamilton
     cnrm.cloud.google.com/service-account-email: cnrmsa@thomasscothamilton.iam.gserviceaccount.com
   name: {{ .Values.nameOverride | default .Chart.Name }}-topic
-spec:
-  projectRef:
-    external: projects/thomasscothamilton
+spec: {}
