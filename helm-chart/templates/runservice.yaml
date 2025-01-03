@@ -22,4 +22,4 @@ spec:
      - name: {{ .Values.nameOverride | default .Chart.Name }}-volume
        cloudSqlInstance:
          instances:
-           - name: thomasscothamilton:us-east1:openapi-python-flask-cloudsql-instance
+           - name: openapi-python-flask/thomasscothamilton:us-east1:openapi-python-flask-cloudsql-instance
