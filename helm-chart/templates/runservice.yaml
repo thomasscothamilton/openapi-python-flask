@@ -23,4 +23,4 @@ spec:
        cloudSqlInstance:
          instances:
            - name: thomasscothamilton:us-east1:openapi-python-flask-cloudsql-instance
-             namespace: openapi-python-flask
+             namespace: ""
