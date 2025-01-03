@@ -15,12 +15,3 @@ spec:
     - image: {{ .Values.image }}
       ports:
       - containerPort: {{ .Values.containerPort }}
-      volumeMounts:
-        - name: {{ .Values.nameOverride | default .Chart.Name }}-volume
-          mountPath: "/cloudsql"
-    volumes:
-     - name: {{ .Values.nameOverride | default .Chart.Name }}-volume
-       cloudSqlInstance:
-         instances:
-           - name: thomasscothamilton:us-east1:openapi-python-flask-cloudsql-instance
-             namespace: ""
