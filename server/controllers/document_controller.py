@@ -19,7 +19,7 @@ def serialize_document(document):
     }
 
 
-def create_document():
+def documents_post():
     try:
         data = request.get_json()
         with SessionLocal() as session:
@@ -34,7 +34,7 @@ def create_document():
         return handle_error(e)
 
 
-def get_documents():
+def documents_get():
     try:
         with SessionLocal() as session:
             documents = session.query(Document).all()
@@ -43,7 +43,7 @@ def get_documents():
         return handle_error(e)
 
 
-def get_document(document_id):
+def documents_id_get(document_id):
     try:
         with SessionLocal() as session:
             document = session.query(Document).filter(Document.id == document_id).first()
@@ -54,7 +54,7 @@ def get_document(document_id):
         return handle_error(e)
 
 
-def delete_document(document_id):
+def documents_id_delete(document_id):
     try:
         with SessionLocal() as session:
             document = session.query(Document).filter(Document.id == document_id).first()
@@ -64,6 +64,21 @@ def delete_document(document_id):
                 # Publish Pub/Sub event
                 publish_message(f"Document with ID {document_id} deleted")
                 return jsonify({"message": "Document deleted"}), 200
+            return jsonify({"error": "Document not found"}), 404
+    except Exception as e:
+        return handle_error(e)
+
+def documents_id_put(document_id, document):
+    try:
+        with SessionLocal() as session:
+            existing_document = session.query(Document).filter(Document.id == document_id).first()
+            if existing_document:
+                existing_document.title = document["title"]
+                existing_document.content = document["content"]
+                session.commit()
+                # Publish Pub/Sub event
+                publish_message(f"Document with ID {document_id} updated")
+                return jsonify({"message": "Document updated"}), 200
             return jsonify({"error": "Document not found"}), 404
     except Exception as e:
         return handle_error(e)
