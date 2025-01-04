@@ -1,76 +1,68 @@
-import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
-
-from server.models.document import Document  # noqa: E501
-from server import util
+from flask import jsonify, request
+from server.database import SessionLocal, Document
+from server.pubsub import publish_message
 
 
-def documents_get():  # noqa: E501
-    """Get all documents
-
-     # noqa: E501
-
-
-    :rtype: Union[List[Document], Tuple[List[Document], int], Tuple[List[Document], int, Dict[str, str]]
-    """
-    return 'do some magic!'
+def handle_error(exception):
+    """Helper function for standardized error responses."""
+    return jsonify({"error": str(exception)}), 500
 
 
-def documents_id_delete(document_id):  # noqa: E501
-    """Delete a document by ID
-
-     # noqa: E501
-
-    :param document_id: 
-    :type document_id: str
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
-    return 'do some magic!'
+def serialize_document(document):
+    """Helper function to serialize a Document object."""
+    return {
+        "id": document.id,
+        "title": document.title,
+        "content": document.content,
+        "created_at": document.created_at
+    }
 
 
-def documents_id_get(document_id):  # noqa: E501
-    """Get a document by ID
-
-     # noqa: E501
-
-    :param document_id: 
-    :type document_id: str
-
-    :rtype: Union[Document, Tuple[Document, int], Tuple[Document, int, Dict[str, str]]
-    """
-    return 'do some magic!'
-
-
-def documents_id_put(document_id, document):  # noqa: E501
-    """Update a document by ID
-
-     # noqa: E501
-
-    :param document_id: 
-    :type document_id: str
-    :param document: 
-    :type document: dict | bytes
-
-    :rtype: Union[Document, Tuple[Document, int], Tuple[Document, int, Dict[str, str]]
-    """
-    if connexion.request.is_json:
-        document = Document.from_dict(connexion.request.get_json())  # noqa: E501
-    return { 'document_id': document_id, 'document': document }
+def create_document():
+    try:
+        data = request.get_json()
+        with SessionLocal() as session:
+            new_document = Document(title=data["title"], content=data["content"])
+            session.add(new_document)
+            session.commit()
+            session.refresh(new_document)
+            # Publish Pub/Sub event
+            publish_message(f"Document created with ID {new_document.id}")
+            return jsonify({"id": new_document.id}), 201
+    except Exception as e:
+        return handle_error(e)
 
 
-def documents_post(document):  # noqa: E501
-    """Create a new document
+def get_documents():
+    try:
+        with SessionLocal() as session:
+            documents = session.query(Document).all()
+            return jsonify([serialize_document(doc) for doc in documents]), 200
+    except Exception as e:
+        return handle_error(e)
 
-     # noqa: E501
 
-    :param document: 
-    :type document: dict | bytes
+def get_document(document_id):
+    try:
+        with SessionLocal() as session:
+            document = session.query(Document).filter(Document.id == document_id).first()
+            if document:
+                return jsonify(serialize_document(document)), 200
+            return jsonify({"error": "Document not found"}), 404
+    except Exception as e:
+        return handle_error(e)
 
-    :rtype: Union[Document, Tuple[Document, int], Tuple[Document, int, Dict[str, str]]
-    """
-    if connexion.request.is_json:
-        document = Document.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+def delete_document(document_id):
+    try:
+        with SessionLocal() as session:
+            document = session.query(Document).filter(Document.id == document_id).first()
+            if document:
+                session.delete(document)
+                session.commit()
+                # Publish Pub/Sub event
+                publish_message(f"Document with ID {document_id} deleted")
+                return jsonify({"message": "Document deleted"}), 200
+            return jsonify({"error": "Document not found"}), 404
+    except Exception as e:
+        return handle_error(e)
