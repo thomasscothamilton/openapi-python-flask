@@ -1,5 +1,6 @@
 from flask import jsonify, request
-from server.database import SessionLocal, Document
+from server.database import SessionLocal
+from server.models import Document
 from server.pubsub import publish_message
 
 
