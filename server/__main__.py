@@ -3,9 +3,12 @@
 import connexion
 
 from server import encoder
+from server.database import init_db
 
 
 def main():
+    init_db()
+
     app = connexion.App(__name__, specification_dir='./openapi/')
     app.app.json_encoder = encoder.JSONEncoder
     app.add_api('openapi.yaml',

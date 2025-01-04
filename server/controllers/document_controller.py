@@ -20,18 +20,25 @@ def serialize_document(document):
 
 
 def documents_post():
+    session = SessionLocal()
     try:
         data = request.get_json()
-        with SessionLocal() as session:
-            new_document = Document(title=data["title"], content=data["content"])
-            session.add(new_document)
-            session.commit()
-            session.refresh(new_document)
-            # Publish Pub/Sub event
-            publish_message(f"Document created with ID {new_document.id}")
-            return jsonify({"id": new_document.id}), 201
+        new_document = Document(title=data["title"], content=data["content"])
+        session.add(new_document)
+        session.commit()  # Commit the transaction to persist the data
+        session.refresh(new_document)  # Refresh the instance to load the generated primary key
+
+        return jsonify({
+            "id": new_document.id,
+            "title": new_document.title,
+            "content": new_document.content,
+            "created_at": new_document.created_at
+        }), 201
     except Exception as e:
-        return handle_error(e)
+        session.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        session.close()
 
 
 def documents_get():
