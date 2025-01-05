@@ -2,14 +2,15 @@
 
 import connexion
 
-from server import encoder
-from server.database import init_db
+from server import encoder, database
 
 
 def main():
-    init_db()
+    engine = database.init_connection_pool()
+    database.migrate_db(engine)
 
     app = connexion.App(__name__, specification_dir='./openapi/')
+
     app.app.json_encoder = encoder.JSONEncoder
     app.add_api('openapi.yaml',
                 arguments={'title': 'Document Service API'},

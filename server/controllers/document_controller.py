@@ -18,7 +18,6 @@ def serialize_document(document):
         "created_at": document.created_at
     }
 
-
 def documents_post():
     session = SessionLocal()
     try:
