@@ -1,4 +1,15 @@
-FROM python:3-alpine
+FROM python:3.12.3-alpine
+
+RUN apk add --no-cache \
+    gcc \
+    g++ \
+    musl-dev \
+    linux-headers \
+    libffi-dev \
+    openssl-dev \
+    make \
+    build-base \
+    postgresql-dev
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app

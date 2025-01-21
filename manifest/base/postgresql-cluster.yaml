@@ -1,0 +1,43 @@
+apiVersion: v1
+data:
+  password: bWQ1NWY0ZGNjM2I1YWE3NjVkNjFkODMyN2RlYjg4MmNmOTkK
+  username: dXNlcg==
+kind: Secret
+metadata:
+  name: cluster-example-app-user
+type: Opaque
+---
+apiVersion: v1
+data:
+  password: dU4zaTFIaDBiWWJDYzRUeVZBYWNCaG1TemdxdHpxeG1PVmpBbjBRSUNoc0pyU211OVBZMmZ3MnE4RUtLTHBaOQ==
+  username: cG9zdGdyZXM=
+kind: Secret
+metadata:
+  name: cluster-example-superuser
+type: kubernetes.io/basic-auth
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgresql-cluster
+spec:
+  instances: 3
+  postgresql:
+    pg_hba:
+      - host all all all trust
+  bootstrap:
+    initdb:
+      database: database
+      owner: user
+  storage:
+    size: 1Gi
+---
+#apiVersion: postgresql.cnpg.io/v1
+#kind: Database
+#metadata:
+#  name: database
+#spec:
+#  name: one
+#  owner: app
+#  cluster:
+#    name: cluster-example

@@ -1,8 +1,8 @@
 from flask import jsonify, request
-from server.database import SessionLocal
-from server.models import Document
-from server.pubsub import publish_message
 
+from server.database import init_connection_pool
+from server.models import Document
+from sqlalchemy.orm import sessionmaker
 
 def handle_error(exception):
     """Helper function for standardized error responses."""
@@ -19,7 +19,7 @@ def serialize_document(document):
     }
 
 def documents_post():
-    session = SessionLocal()
+    session = sessionmaker(autocommit=False, autoflush=False, bind=init_connection_pool())
     try:
         data = request.get_json()
         new_document = Document(title=data["title"], content=data["content"])
@@ -41,8 +41,9 @@ def documents_post():
 
 
 def documents_get():
+    Session = sessionmaker(autocommit=False, autoflush=False, bind=init_connection_pool())
     try:
-        with SessionLocal() as session:
+        with Session() as session:
             documents = session.query(Document).all()
             return jsonify([serialize_document(doc) for doc in documents]), 200
     except Exception as e:
@@ -50,8 +51,9 @@ def documents_get():
 
 
 def documents_id_get(document_id):
+    Session = sessionmaker(autocommit=False, autoflush=False, bind=init_connection_pool())
     try:
-        with SessionLocal() as session:
+        with Session() as session:
             document = session.query(Document).filter(Document.id == document_id).first()
             if document:
                 return jsonify(serialize_document(document)), 200
@@ -62,13 +64,12 @@ def documents_id_get(document_id):
 
 def documents_id_delete(document_id):
     try:
-        with SessionLocal() as session:
+        with sessionmaker(autocommit=False, autoflush=False, bind=init_connection_pool()) as session:
             document = session.query(Document).filter(Document.id == document_id).first()
             if document:
                 session.delete(document)
                 session.commit()
                 # Publish Pub/Sub event
-                publish_message(f"Document with ID {document_id} deleted")
                 return jsonify({"message": "Document deleted"}), 200
             return jsonify({"error": "Document not found"}), 404
     except Exception as e:
@@ -76,14 +77,13 @@ def documents_id_delete(document_id):
 
 def documents_id_put(document_id, document):
     try:
-        with SessionLocal() as session:
+        with sessionmaker(autocommit=False, autoflush=False, bind=init_connection_pool()) as session:
             existing_document = session.query(Document).filter(Document.id == document_id).first()
             if existing_document:
                 existing_document.title = document["title"]
                 existing_document.content = document["content"]
                 session.commit()
                 # Publish Pub/Sub event
-                publish_message(f"Document with ID {document_id} updated")
                 return jsonify({"message": "Document updated"}), 200
             return jsonify({"error": "Document not found"}), 404
     except Exception as e:

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: application
+  labels:
+    app: application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: application
+  template:
+    metadata:
+      labels:
+        app: application
+    spec:
+      containers:
+      - name: application
+        image: application:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_HOST
+          value: "postgresql-cluster-rw.default.svc.cluster.local"  # Primary service for PostgreSQL
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: cluster-example-app-user
+              key: username  # Ensure the secret contains this key
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: cluster-example-app-user
+              key: password  # Ensure the secret contains this key
+        - name: DB_NAME
+          value: "database"  # Database name
+        - name: DB_PORT
+          value: "5432"  # PostgreSQL service port

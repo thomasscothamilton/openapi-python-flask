@@ -3,12 +3,16 @@ from unittest.mock import patch, MagicMock
 from server.controllers import document_controller
 from flask import Flask
 
+
 class TestDocumentController(unittest.TestCase):
 
     def setUp(self):
         self.app = Flask(__name__)
         self.client = self.app.test_client()
 
+    @patch.dict('os.environ', {
+        'USE_SQLITE': "True"
+    })
     @patch('server.controllers.document_controller.SessionLocal')
     def test_documents_get(self, mock_session):
         mock_session.return_value.__enter__.return_value.query.return_value.all.return_value = []
@@ -17,6 +21,9 @@ class TestDocumentController(unittest.TestCase):
             self.assertEqual(result[1], 200)
             self.assertEqual(result[0].json, [])
 
+    @patch.dict('os.environ', {
+        'USE_SQLITE': "True"
+    })
     @patch('server.controllers.document_controller.SessionLocal')
     def test_documents_id_get(self, mock_session):
         mock_session.return_value.__enter__.return_value.query.return_value.filter.return_value.first.return_value = None
@@ -25,6 +32,9 @@ class TestDocumentController(unittest.TestCase):
             self.assertEqual(result[1], 404)
             self.assertEqual(result[0].json, {"error": "Document not found"})
 
+    @patch.dict('os.environ', {
+        'USE_SQLITE': "True"
+    })
     @patch('server.controllers.document_controller.SessionLocal')
     @patch('server.controllers.document_controller.publish_message')
     def test_documents_post(self, mock_publish, mock_session):
@@ -37,6 +47,9 @@ class TestDocumentController(unittest.TestCase):
             self.assertEqual(result[1], 201)
             self.assertIn("id", result[0].json)
 
+    @patch.dict('os.environ', {
+        'USE_SQLITE': "True"
+    })
     @patch('server.controllers.document_controller.SessionLocal')
     @patch('server.controllers.document_controller.publish_message')
     def test_documents_id_delete(self, mock_publish, mock_session):
@@ -49,6 +62,9 @@ class TestDocumentController(unittest.TestCase):
             self.assertEqual(result[1], 200)
             self.assertEqual(result[0].json, {"message": "Document deleted"})
 
+    @patch.dict('os.environ', {
+        'USE_SQLITE': "True"
+    })
     @patch('server.controllers.document_controller.SessionLocal')
     @patch('server.controllers.document_controller.publish_message')
     def test_documents_id_put(self, mock_publish, mock_session):

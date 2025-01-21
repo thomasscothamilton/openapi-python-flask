@@ -2,46 +2,42 @@ import os
 
 import sqlalchemy
 
-from server.connect_connector_auto_iam_authn import connect_with_connector_auto_iam_authn
-from server.connect_tcp import connect_tcp_socket
-from server.connect_unix import connect_unix_socket
-
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from server.connect_connector import connect_with_connector
+from sqlalchemy import create_engine
 
 Base = declarative_base()
 
-def init_connection_pool() -> sqlalchemy.engine.base.Engine:
-    """Sets up connection pool for the app."""
-    if os.environ.get("USE_SQLITE"):
-        # Use SQLite for local development or testing
-        sqlite_path = os.path.join(os.path.dirname(__file__), "local.db")
-        return sqlalchemy.create_engine(f"sqlite:///{sqlite_path}", connect_args={"check_same_thread": False})
 
-    # use a TCP socket when INSTANCE_HOST (e.g. 127.0.0.1) is defined
-    if os.environ.get("INSTANCE_HOST"):
-        return connect_tcp_socket()
+def init_connection_pool():
+    # Fetch environment variables or default values for the database connection
+    db_user = os.getenv("DB_USER", "user")  # Replace 'user' with your default user
+    db_password = os.getenv("DB_PASSWORD", "password")  # Replace 'password' with your default password
+    db_host = os.getenv("DB_HOST", "localhost")  # Replace 'localhost' with your default host
+    db_port = os.getenv("DB_PORT", "5432")  # Replace '5432' with your default port
+    db_name = os.getenv("DB_NAME", "database")  # Replace 'database' with your default database name
 
-    # use a Unix socket when INSTANCE_UNIX_SOCKET (e.g. /cloudsql/project:region:instance) is defined
-    if os.environ.get("INSTANCE_UNIX_SOCKET"):
-        return connect_unix_socket()
+    # Create the PostgreSQL connection string
+    connection_string = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
-    # use the connector when INSTANCE_CONNECTION_NAME (e.g. project:region:instance) is defined
-    if os.environ.get("INSTANCE_CONNECTION_NAME"):
-        # Either a DB_USER or a DB_IAM_USER should be defined. If both are
-        # defined, DB_IAM_USER takes precedence.
-        return (
-            connect_with_connector_auto_iam_authn()
-            if os.environ.get("DB_IAM_USER")
-            else connect_with_connector()
-        )
-
-    raise ValueError(
-        "Missing database connection type. Please define one of INSTANCE_HOST, INSTANCE_UNIX_SOCKET, or INSTANCE_CONNECTION_NAME"
+    # Create an SQLAlchemy engine with a connection pool
+    engine = create_engine(
+        connection_string,
+        pool_size=5,  # Adjust pool size as needed
+        max_overflow=10,  # Allows additional connections if the pool is full
+        pool_timeout=30,  # Wait time before raising a timeout error
+        echo=True  # Enable SQLAlchemy query logging for debugging
     )
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=init_connection_pool())
+    # Test the connection
+    try:
+        with engine.connect() as connection:
+            print("Successfully connected to the database.")
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        raise
+
+    return engine
+
 
 # create 'votes' table in database if it does not already exist
 def migrate_db(db: sqlalchemy.engine.base.Engine) -> None:
@@ -52,7 +48,7 @@ def migrate_db(db: sqlalchemy.engine.base.Engine) -> None:
         conn.execute(
             sqlalchemy.text(
                 "CREATE TABLE IF NOT EXISTS documents "
-                "( id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                "(  id SERIAL PRIMARY KEY, "
                 "title VARCHAR(255) NOT NULL, "
                 "content TEXT NOT NULL, "
                 "created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );"
